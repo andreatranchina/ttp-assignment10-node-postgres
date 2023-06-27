@@ -49,11 +49,26 @@ router.post('/', async(req, res) =>{
                              
 })
 
+//update entire record
+router.put('/:id', async(req, res) => {
+    try{
+        const {id} = req.params;
+        const {salary, yearly_raise, employee_id} = req.body;
+        const {rows} = await pool.query(
+            'UPDATE employee_salaries SET salary = $1, yearly_raise = $2, employee_id = $3 WHERE id = $4 RETURNING *'
+            , [salary, yearly_raise, employee_id, id]);
+        res.json(rows);
+    }
+    catch(error){
+        console.log(error);
+    }
+})
+
 //delete a record
 router.delete('/:id', async(req,res) =>{
     try{
         const {id} = req.params;
-        const {rows} = await pool.query('DELETE FROM employee_salaries WHERE id = $1', [id]);
+        const {rows} = await pool.query('DELETE FROM employee_salaries WHERE id = $1 RETURNING *', [id]);
         res.json(rows);
     }
     catch(error){

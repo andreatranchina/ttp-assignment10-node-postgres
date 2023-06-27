@@ -52,11 +52,42 @@ router.post('/', async(req, res) =>{
                              
 })
 
+//update entire record
+router.put('/:id', async(req, res) => {
+    try{
+        const {id} = req.params;
+        const {first_name, last_name, dob} = req.body;
+        const {rows} = await pool.query(
+            'UPDATE employee_names SET first_name = $1, last_name = $2, dob = $3 WHERE id = $4 RETURNING *'
+            , [first_name, last_name, dob, id]);
+        res.json(rows);
+    }
+    catch(error){
+        console.log(error);
+    }
+})
+
+//update one field in a record
+router.patch('/:id', async(req, res) => {
+    try{
+        const {id} = req.params;
+        const {first_name} = req.body;
+        const {rows} = await pool.query(
+            'UPDATE employee_names SET first_name = $1 WHERE id = $2 RETURNING *'
+            , [first_name, id]);
+        res.json(rows);
+    }
+    catch(error){
+        console.log(error);
+    }
+})
+
+
 //delete a record
 router.delete('/:id', async(req,res) =>{
     try{
         const {id} = req.params;
-        const {rows} = await pool.query('DELETE FROM employee_names WHERE id = $1', [id]);
+        const {rows} = await pool.query('DELETE FROM employee_names WHERE id = $1 RETURNING *', [id]);
         res.json(rows);
     }
     catch(error){

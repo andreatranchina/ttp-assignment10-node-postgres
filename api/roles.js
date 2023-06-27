@@ -49,11 +49,26 @@ router.post('/', async(req, res) =>{
                              
 })
 
+//update entire record
+router.put('/:id', async(req, res) => {
+    try{
+        const {id} = req.params;
+        const {department, full_time, date_hired, employee_id} = req.body;
+        const {rows} = await pool.query(
+            'UPDATE employee_roles SET department = $1, full_time = $2, date_hired = $3, employee_id = $4 WHERE id = $5 RETURNING *'
+            , [department, full_time, date_hired, employee_id, id]);
+        res.json(rows);
+    }
+    catch(error){
+        console.log(error);
+    }
+})
+
 //delete a record
 router.delete('/:id', async(req,res) =>{
     try{
         const {id} = req.params;
-        const {rows} = await pool.query('DELETE FROM employee_roles WHERE id = $1', [id]);
+        const {rows} = await pool.query('DELETE FROM employee_roles WHERE id = $1 RETURNING *', [id]);
         res.json(rows);
     }
     catch(error){
